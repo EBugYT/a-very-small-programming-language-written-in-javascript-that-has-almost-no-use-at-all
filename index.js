@@ -63,8 +63,6 @@ tokens = tokens.map((el) => {
     }
 })
 
-console.log(tokens)
-
 // Now the part i love the most (this is irony not like fr like who likes this part)
 
 var variables = {}
@@ -117,23 +115,85 @@ function read(outvar) {
     var readline = require('readline').createInterface(process.stdin, process.stdout)
     readline.setPrompt('');
     readline.prompt()
-    readline.on('line', function(line) {
+    readline.on('line', function (line) {
         setVar(outvar, line)
         readline.close()
     })
 }
 
-function gotoIfZero(var1,checkpoint) {
-    if(getVar(var1) == 0) {
+function gotoIfZero(var1, checkpoint) {
+    if (getVar(var1) == 0) {
         goto(checkpoint)
-    } 
+    }
 }
 
-function gotoIfGTZero(var1,checkpoint) {
-    if(getVar(var1) > 0) {
+function gotoIfGTZero(var1, checkpoint) {
+    if (getVar(var1) > 0) {
         goto(checkpoint)
-    } 
+    }
 }
 
 // Now parsing, yay
 
+var commands = []
+var command = []
+tokens.forEach(el => {
+    if (el == "EOL") {
+        commands.push(command)
+        command = []
+    } else {
+        command.push(el)
+    }
+});
+
+commands.push(command)
+command = []
+
+function strip1(text) {
+    return text.slice(1, -1)
+}
+
+function isString(text) {
+    return text.startsWith("\"") && text.endsWith("\"")
+}
+
+function runCommand() {
+    command = commands[programCounter]
+    if (command[0] == "CHECKPOINT") {
+        checkpoint(strip1(command[1]))
+    } else if (command[0] == "GOTO") {
+        goto(strip1(command[1]))
+    } else if (command[0] == "SETVAR") {
+        if (isString(command[2])) {
+            setVar(strip1(command[1]), strip1(command[2]))
+        } else if (["true", "false"].includes(command[2])) {
+            if (command[2] == "true") {
+                setVar(strip1(command[1]), true)
+            } else {
+                setVar(strip1(command[1]), false)
+            }
+        } else {
+            setVar(strip1(command[1]), parseFloat(command[2]))
+        }
+    } else if (command[0] == "PRINTVAR") {
+        printVar(strip1(command[1]))
+    } else if (command[0] == "PRINT") {
+        console.log(strip1(command[1]))
+    } else if (command[0] == "READ") {
+        read(strip1(command[1]))
+    } else if (command[0] == "ADD") {
+        add(strip1(command[1]), strip1(command[2]), strip1(command[3]))
+    } else if (command[0] == "SUBT") {
+        subt(strip1(command[1]), strip1(command[2]), strip1(command[3]))
+    } else if (command[0] == "MUL") {
+        mul(strip1(command[1]), strip1(command[2]), strip1(command[3]))
+    } else if (command[0] == "DIV") {
+        div(strip1(command[1]), strip1(command[2]), strip1(command[3]))
+    } else if (command[0] == "GOTOIFZERO") {
+        gotoIfZero(strip1(command[1]), strip1(command[2]))
+    } else if (command[0] == "GOTOIFGTZERO") {
+        gotoIfGTZero(strip1(command[1]), strip1(command[2]))
+    } else if (command[0] == "HALT") {
+        halt()
+    }
+}
