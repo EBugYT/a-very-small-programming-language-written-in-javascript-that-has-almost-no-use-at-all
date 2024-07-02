@@ -1,0 +1,11 @@
+{
+  "name": "a-very-small-programming-language-written-in-javascript-that-has-almost-no-use-at-all",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "",
+  "license": "LICENSE IN LICENSE"
+}
