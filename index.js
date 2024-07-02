@@ -160,6 +160,12 @@ function isString(text) {
 
 var commandRunning = false
 
+commands.forEach(command => {
+    if (command[0] == "CHECKPOINT") {
+        checkpoint(strip1(command[1]))
+    }
+});
+
 function runCommand() {
     command = commands[programCounter]
     if (command[0] == "CHECKPOINT") {
@@ -183,7 +189,9 @@ function runCommand() {
     } else if (command[0] == "PRINT") {
         console.log(strip1(command[1]))
     } else if (command[0] == "READ") {
-        read(strip1(command[1]))
+        setVar(command[1], read(strip1(command[1])))
+    } else if (command[0] == "READNUM") {
+        setVar(command[1], parseFloat(read(strip1(command[1]))))
     } else if (command[0] == "ADD") {
         add(strip1(command[1]), strip1(command[2]), strip1(command[3]))
     } else if (command[0] == "SUBT") {
