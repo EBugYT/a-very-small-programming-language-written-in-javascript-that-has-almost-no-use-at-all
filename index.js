@@ -1,7 +1,7 @@
 var fs = require("fs")
 
 var args = process.argv.slice(2);
-var file = fs.readFileSync(args[0], { encoding: 'utf8', flag: 'r' })
+var file = fs.readFileSync(args[0] + ".thatlang", { encoding: 'utf8', flag: 'r' })
 
 // Parser logic (very hard to make and unreadable)
 // sorry
@@ -118,6 +118,7 @@ function read(outvar) {
     readline.on('line', function (line) {
         setVar(outvar, line)
         readline.close()
+        commandRunning = false;
     })
 }
 
@@ -156,6 +157,8 @@ function strip1(text) {
 function isString(text) {
     return text.startsWith("\"") && text.endsWith("\"")
 }
+
+var commandRunning = false
 
 function runCommand() {
     command = commands[programCounter]
@@ -196,4 +199,22 @@ function runCommand() {
     } else if (command[0] == "HALT") {
         halt()
     }
+    if (command[0] != "READ") {
+        commandRunning = false
+    }
 }
+
+function runScript() {
+    commandRunning = true
+    runCommand()
+    let interval = setInterval(() => {
+        if (commandRunning == false) {
+            clearInterval(interval)
+            if (programCounter < commands.length - 1) {
+                programCounter++
+                runScript()
+            }
+        }
+    })
+}
+runScript()
